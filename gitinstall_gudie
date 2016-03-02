@@ -1,0 +1,57 @@
+Step:1
+	sudo apt-get install git
+Step2:
+	git config --global user.name "user_name"
+	git config --global user.email "email_id"
+	
+Stpep3:
+	git init Mytest
+		
+// If the repository is created successfully, then you will get the following line:
+
+// Initialized empty Git repository in /home/akshay/Mytest/.git/
+
+Step4: 
+	cd Mytest
+
+Step5: 
+	//Creating a README file to describe the repository
+	gedit README
+Step6: 
+	//Adding repository files to an index
+	
+	// sample.c
+	// #include<stdio.h>
+		int main()
+			{
+			printf("hello world");
+			return 0;
+		}
+
+	//So, now that we have 2 files
+
+	//README and sample.c
+
+	git add README
+	git add smaple.c
+
+Step7: 
+	//Committing changes made to the index
+	
+	git commit -m "some_message"
+
+Step8: 
+	//Creating a repository on GitHub
+
+		/* Create a repository on GitHub. Notice that the name of the repository should be the same as the repository's on the local system. In this case, it will be "Mytest". To do this login to your account on https://github.com. Then click on the "plus(+)" symbol at the top right corner of the page and select "create new repository". Fill the details as shown in the image below and click on "create repository" button. */
+
+	git remote add origin https://github.com/user_name/Mytest.git
+
+Step9:
+	//Pushing files in local repository to GitHub repository
+	git push origin master
+
+
+	
+
+
