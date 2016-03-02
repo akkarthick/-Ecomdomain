@@ -1,0 +1,23 @@
+Checking What’s Installed
+	
+	You can see a list of all your installed packages with dpkg.
+		    sudo dpkg –list
+
+	You can also use less to scroll through this list.
+			    sudo dpkg –list | less
+	You can also search through the list with the grep command.
+			    dpkg –list | grep [search term]
+	
+	If something is installed, you’ll see a package name and a 		description.
+
+	You can also search through a more compact method:
+
+    			dpkg –l ‘search term’
+
+
+Easter Egg
+
+	APT has an interesting easter egg.
+
+    	sudo apt-get moo
+
