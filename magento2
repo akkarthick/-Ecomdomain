@@ -1,0 +1,200 @@
+Refer:
+http://www.migrate2cloud.com/blog/install-magento2-in-nginx-server-using-command-line/
+
+
+Step1:
+	Create basic nginx configuration file for magento2.
+
+# vim /etc/nginx/sites-available/magantositename
+
+Add the following configuration files in nginx,
+
+ 
+
+##########################
+
+server {
+
+listen 80;
+
+ root /var/www/magento2; #Use you mangeto2 location
+
+index index.php index.html index.htm;
+
+ server_name yuor_magento.siteurl;
+
+#location / {
+
+#try_files $uri $uri/ /index.php?q=$uri&$args;
+
+#}
+
+   location /setup {
+
+       try_files $uri $uri/ @setuphandler;
+
+   }
+
+# Rewrite Setup’s Internal Requests
+
+   location @setuphandler {
+
+       rewrite /setup /setup/index.php;
+
+   }
+
+    location / {
+
+       index index.php index.html;
+
+       try_files $uri $uri/ @handler;
+
+   }
+
+    # Rewrite Internal Requests
+
+    location @handler {
+
+       rewrite / /index.php;
+
+    }
+
+     location /pub/static {
+
+         try_files $uri $uri/ @static;
+
+    }
+
+     location @static {
+
+          rewrite ^/pub/static/(.*)$ /pub/static.php?resource=$1? last;
+
+    }
+
+ error_page 404 /404.html;
+
+ error_page 500 502 503 504 /50x.html;
+
+location = /50x.html {
+
+root /usr/share/nginx/www;
+
+}
+
+#pass the PHP scripts to f stcgi socket
+
+location ~ \.php$ {
+
+               try_files $uri =404;
+
+               fastcgi_pass unix:/var/run/php5-fpm.sock;
+
+               fastcgi_index index.php;
+
+               fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
+               include fastcgi_params;
+
+               fastcgi_read_timeout 900s;
+
+#Magento 2 Developer Mode
+
+               fastcgi_param MAGE_MODE “developer”;
+
+      } 
+
+}
+
+ 
+Step2:
+	create a symlink in /etc/nginx/sites-enable/magantositename
+
+ # ln -s /etc/nginx/sites-available/magantositename /etc/nginx/sites-enable/magantositename
+
+ 
+
+Restart PHP handler php5-fpm and nginx
+
+ #  service php5-fpm restart
+
+ # service nginx restart 
+
+Step3:
+	Create database and database user for magento2
+Step4:
+	Steps to install Magento2
+	
+	 Change the directory where to download and install Magento2.
+
+ # cd /var/www/
+
+ Download the magento2 zip file from github
+
+ # wget https://github.com/magento/magento2/archive/develop.zip
+
+ # unzip develop.zip
+
+# mv magento2-develop magento2
+
+ Change the ownership to your webserver user name. Typically it is www-data
+
+ # chown -R www-data:www-data magento2
+
+ # cd magento2
+
+Change the permissions as follows,
+
+ # find . -type d -exec chmod 700 {} \;
+
+# find . -type f -exec chmod 600 {} \;
+
+make the file magento file executable  in the directory bin
+
+# chmod +x bin/magento
+
+Step5:
+	Install magento using command line.
+
+	sudo a2enmod rewrite
+        sudo php5enmod mcrypt
+
+Step6:
+
+	Install composer with the following command:
+ curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+
+
+sudo nano /root/.composer/auth.json
+	Copy and paste the contents below into the file.
+	{
+"http-basic": {
+      "repo.magento.com": {
+         "username": "<your public key>",
+         "password": "<your private key>"
+      }
+   }
+}
+
+Step7:
+
+	Install Clone the Magento Github repo.
+
+	go to cd /var/www
+
+	git clone -b 2.0 https://github.com/magento/magento2.git public
+
+CD into the cloned folder.
+
+$ cd /public
+
+Run composer install to update the dependencies.
+ $ composer install
+
+Step8:
+
+	Install magento using composer.
+
+php -f bin/magento setup:install --base-url=http://magento2.com/ --backend-frontname=admin --db-host=localhost --db-name=magento2 --db-user=root --db-password=root --admin-firstname=Karthik --admin-lastname=S --admin-email=ak.karthick@gmail.com --admin-user=admin --admin-password=admin#123 --language=en_US --currency=INR --timezone=America/Chicago
+
+
+
